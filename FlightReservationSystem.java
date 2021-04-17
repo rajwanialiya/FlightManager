@@ -47,7 +47,7 @@ public class FlightReservationSystem
 				String flightNum = null;
 				String passengerName = "";
 				String passport = "";
-				String seat = "";
+				String seatType = "";
 
 				if (commandLine.hasNext())
 				{
@@ -66,18 +66,18 @@ public class FlightReservationSystem
 				}
 				if (commandLine.hasNext())
 				{
-					seat = commandLine.next();
+					seatType = commandLine.next();
 					characteristics++;
 				}
 				if (characteristics == 4){
-					Reservation res = manager.reserveSeatOnFlight(flightNum.toUpperCase(), passengerName, passport.toUpperCase(), seat);
+					Reservation res = manager.reserveSeatOnFlight(flightNum.toUpperCase(), passengerName, passport.toUpperCase(), seatType);
 					if (res != null){
 						myReservations.add(res);
 						res.print();
-					} else {
+					}else{
 						System.out.println(manager.getErrorMessage());
 					}
-				} else {
+				}else{
 					System.out.println("Command should look like: RES flight name passport seat.");
 				}
 			}
@@ -87,6 +87,7 @@ public class FlightReservationSystem
 				String flightNum = null;
 				String passengerName = "";
 				String passport = "";
+				String seatType = "";
 
 				if (commandLine.hasNext())
 				{
@@ -120,7 +121,8 @@ public class FlightReservationSystem
 					flightNum = commandLine.next();
 					Flight flight = manager.findFlight(flightNum);
 					if (flight != null) {
-						flight.printSeats();
+						Aircraft aircraft = flight.getAircraft();
+						aircraft.setSeatLayout();
 					}
 				}
 				if (commandLine.hasNext())
@@ -137,13 +139,6 @@ public class FlightReservationSystem
 			else if (action.equalsIgnoreCase("MYRES"))
 			{
 				for (Reservation myres : myReservations)
-
-					myres.print();
-			}
-			else if (action.equalsIgnoreCase("PASMAN"))
-			{
-				for (Reservation myres : myReservations)
-					
 					myres.print();
 			}
 			else if (action.equalsIgnoreCase("SORTBYDEP"))

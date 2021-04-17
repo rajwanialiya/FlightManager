@@ -58,13 +58,13 @@ public class Aircraft implements Comparable<Aircraft>
   	return this.numEconomySeats - other.numEconomySeats; 
 	}
 	
-	public String[][] getSeatLayout() 
+	public String[][] setSeatLayout() 
 	{
 		int totalSeats = getTotalSeats();
 		int firstClassSeats = getNumFirstClassSeats();
 		String letter[] = {"A", "B", "C", "D"};
 		String[][] seatLayout = new String[4][totalSeats/4];
-	
+		
 		// POPULATE 2D ARRAY SEAT LAYOUT
 		for (int i = 0; i < 4; i++) {
 			String ch = letter[i];
@@ -73,15 +73,23 @@ public class Aircraft implements Comparable<Aircraft>
 			}
 		}
 
-		for (int j = 0; j < totalSeats/4; j++) {
-			for (int i = 0; i < 4; i++) {
-				if (firstClassSeats > 0) {
+		while (firstClassSeats > 0) {
+			for (int j; j < totalSeats/4; j++) {
+				for (int i; )
+			}
 					seatLayout[i][j] = seatLayout[i][j] + "+";
 					firstClassSeats--;
-				} else {
-					break;
-				}
+		}
+
+		// PRINT SEAT LAYOUT IN THE REQUIRED FORMAT
+		for (int i = 0; i < 4; i++) {
+			if (i == 2) {
+				System.out.println();
 			}
+			for (int j = 0; j < totalSeats/4; j++) {
+				System.out.print(seatLayout[i][j] + " ");
+			}
+			System.out.println();
 		}
 
 		return seatLayout;

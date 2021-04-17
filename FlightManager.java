@@ -129,7 +129,7 @@ public class FlightManager
   }
 
   /*
-  public Reservation reserveSeatOnFlight(String flightNum, String name, String passport, String seatType) throws FlightNotFoundException
+  public Reservation OnFlight(String flightNum, String name, String passport, String seatType) throws FlightNotFoundException
   {
 	if (flights.containsKey(flightNum)){
 		return flights.get(flightNum).seatsAvailable(seatType);
@@ -137,7 +137,7 @@ public class FlightManager
 	throw new FlightNotFoundException(flightNum);
   
   	
-  	if (!flight.reserveSeat(name, passport, seatType))
+  	if (!flight.(name, passport, seatType))
   	{
   		errMsg = flight.getErrorMessage();
   		return null;
@@ -145,9 +145,8 @@ public class FlightManager
   	String seat = flight.getLastAssignedSeat();
   	return new Reservation(flightNum, flight.toString(), name, passport, seat, seatType);
   }
-	*/
-	
-  public Reservation reserveSeatOnFlight(String flightNum, String name, String passport, String seat)
+  */
+  public Reservation OnFlight(String flightNum, String name, String passport, String seatType)
   {
   	int index = flights.indexOf(new Flight(flightNum));
   	if (index == -1)
@@ -155,44 +154,37 @@ public class FlightManager
   		errMsg = "Flight " + flightNum + " Not Found";
   		return null;
   	}
-		Flight flight = flights.get(index);
-
-		String seatType = "ECO";
-		if (seat.endsWith("+")) {
-			seatType = "FCL";
-		}
-
-		Passenger p = new Passenger(name, passport, seat, seatType);
-
-		if (flight.reserveSeat(p, seat)) {
-			return new Reservation(flightNum, flight.toString(), name, passport, seat, seatType);
-		}
-
-		return null;
+  	Flight flight = flights.get(index);
+  	
+  	if (!flight.(name, passport, seatType))
+  	{
+  		errMsg = flight.getErrorMessage();
+  		return null;
+  	}
+  	String seat = flight.getLastAssignedSeat();
+  	return new Reservation(flightNum, flight.toString(), name, passport, seat, seatType);
   }
   
-  public void cancelReservation(Reservation res)
+  public boolean cancelReservation(Reservation res)
   {
-		String seatType = "ECO";
-		if (res.getSeat().endsWith("+")) {
-			seatType = "FCL";
-		}
-
-		Passenger pass = new Passenger(res.getPassengerName(), res.getPassengerPassport(), res.getSeat(), seatType);
-		Flight flight;
-
-    int index = flights.indexOf(new Flight (res.getFlightNum()));
+	Passenger pass = new Passenger(res.getPassengerName(), res.getPassengerPassport());
+	/*
+	for (Flight key : flights.keySet()){
+		if LongHaulFlight
+	}
+	*/
+    int index = flights.indexOf(new Flight(res.getFlightNum()));
   	if (index == -1)
     {
 		  errMsg = "Flight " + res.getFlightNum() + " Not Found";
+		  return false;
+		}if (flights.get(index) instanceof LongHaulFlight){
+			Flight flight = (LongHaulFlight) flights.get(index);
+		}else{
+			Flight flight = flights.get(index);
 		}
-		if (flights.get(index) instanceof LongHaulFlight){
-			flight = (LongHaulFlight) flights.get(index);
-		} else {
-			flight = flights.get(index);
-		}
-
-		flight.cancelSeat(pass);
+  	flight.cancelSeat(res.name, res.passport, res.seatType);
+   	return true;
   }
   
     

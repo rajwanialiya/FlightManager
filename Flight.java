@@ -1,6 +1,29 @@
 import java.util.ArrayList;
 import java.util.Random;
 
+/**		
+ // ---- EXCEPTIONS ---
+ */
+//
+class DuplicatePassengerException extends Exception{
+	public DuplicatePassengerException(Passenger p){
+		super("Duplicate Passenger " + p.getName() + p.getPassport());
+	}
+}
+
+class PassengerNotInManifestException extends Exception{
+	public PassengerNotInManifestException(Passenger p){
+		super("Passenger" + p.getName() + p.getPassport() + "not in flight manifest");
+	}
+}
+
+class SeatOccupiedException extends Exception{
+	public SeatOccupiedException(String seat){
+		super("Seat" + seat + "already occupied");
+	}
+}
+
+
 public class Flight
 {
 	public enum Status {DELAYED, ONTIME, ARRIVED, INFLIGHT};
@@ -17,7 +40,8 @@ public class Flight
 	protected int numPassengers;
 	protected Type type;
 	protected ArrayList<Passenger> manifest;
-	protected ArrayList<String> occupiedSeats;
+	protected TreeMap <String, Passenger> seatMap;
+	}
 	
 	protected Random random = new Random();
 	
@@ -45,7 +69,6 @@ public class Flight
 		status = Status.ONTIME;
 		type = Type.MEDIUMHAUL;
 		manifest = new ArrayList<Passenger>();
-		occupiedSeats = new ArrayList<String>();
 	}
 	
 	public Flight(String flightNum)
@@ -66,7 +89,6 @@ public class Flight
 		status = Status.ONTIME;
 		type = Type.MEDIUMHAUL;
 		manifest = new ArrayList<Passenger>();
-		occupiedSeats = new ArrayList<String>();
 	}
 	
 	public Type getFlightType()
@@ -142,6 +164,8 @@ public class Flight
 	{
 		this.numPassengers = numPassengers;
 	}
+
+	
 	
 	public void assignSeat(Passenger p)
 	{
@@ -162,35 +186,67 @@ public class Flight
 		return numPassengers < aircraft.numEconomySeats;
 	}
 	
-	public boolean cancelSeat(Passenger p) {
-		for (Passenger passenger: manifest) {
-			if (passenger.equals(p)) {
-				occupiedSeats.remove(p.getSeat());
-				manifest.remove(p);
-				numPassengers--;
-				
-				return true;
-			}
+	public boolean cancelSeat(String name, String passport, String seatType)
+	{
+		if (!seatType.equalsIgnoreCase("ECO")) 
+		{
+			errorMessage = "Flight " + flightNum + " Invalid Seat Type " + seatType;
+			return false; 	
 		}
-		System.out.println("No passenger " + p.getName() + " " + p.getPassport() + " was found.");
-		return false;
+
+		Passenger p = new Passenger(name, passport);
+		
+		if (manifest.indexOf(p) == -1) 
+		{
+			throw PassengerNotInManifestException;
+		}
+
+		manifest.remove(p);
+		if (numPassengers > 0) numPassengers--;
+		return true;
 	}
 	
-	public boolean reserveSeat(Passenger p,  String seat)
+	public boolean reserveSeat(String name, String passport, String seatType)
 	{
-		if (occupiedSeats.contains(seat)) {
-			System.out.println("Seat " + seat + " is already occupied ");
+		if (numPassengers >= aircraft.getNumSeats())
+		{
+			errorMessage = "Flight " + flightNum + " Full";
 			return false;
-		} else {
-			occupiedSeats.add(seat);
-			assignSeat(p);
-			manifest.add(p);
-			numPassengers++;
+		}
 
-			return true;
+		if(seatMap.containsKey(seatType)){
+			throw new SeatOccupiedException;
+		}
+
+		if (!seatType.equalsIgnoreCase("ECO")) 
+		{
+			errorMessage = "Flight " + flightNum + " Invalid Seat Type Request";
+			return false;
+		}	
+		// Check for duplicate passenger
+		Passenger p = new Passenger(name, passport, "", seatType);
+	
+		if (manifest.indexOf(p) >=  0)
+		{
+			throw DuplicatePassengerException;
+		}
+		seatMap.put(seatType);
+		assignSeat(p);
+		manifest.add(p);
+		numPassengers++;
+		return true;
+	}
+
+	public void printPassengerManifest(){
+		for(int i = 0; i < manifest.size(); i++){
+			System.out.println(manifest.get(i));
 		}
 	}
 
+	public void printSeat(){
+
+	}
+	
 	public boolean equals(Object other)
 	{
 		Flight otherFlight = (Flight) other;
@@ -201,24 +257,4 @@ public class Flight
 	{
 		 return airline + "\t Flight:  " + flightNum + "\t Dest: " + dest + "\t Departing: " + departureTime + "\t Duration: " + flightDuration + "\t Status: " + status;
 	}
-
-	public void printSeats() {
-		String[][] seatLayout = aircraft.getSeatLayout();
-		int totalSeats = aircraft.getTotalSeats();
-		for (int i = 0; i < 4; i++) {
-			if (i == 2) {
-				System.out.println();
-			}
-			for (int j = 0; j < totalSeats/4; j++) {
-				if (occupiedSeats.contains(seatLayout[i][j])) {
-					System.out.print("XX ");
-				} else {
-					System.out.print(seatLayout[i][j] + " ");
-				}
-			}
-			System.out.println();
-		}
-	}
-
 }
-

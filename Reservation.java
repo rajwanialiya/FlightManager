@@ -3,7 +3,6 @@ public class Reservation
 {
 	String flightNum;
 	String flightInfo;
-	boolean firstClass;
 	String name;
 	String passport;
 	String seat;
@@ -32,22 +31,11 @@ public class Reservation
 		this.seatType = seatType;
 	}
 	
-	public String getPassengerName() 
-	{
-		return name;
-	}
-	public String getPassengerPassport() 
-	{
-		return passport;
-	}
 	public String getFlightNum()
 	{
 		return flightNum;
 	}
-	public String getSeat()
-	{
-		return seat;
-	}
+	
 	public String getFlightInfo()
 	{
 		return flightInfo;
